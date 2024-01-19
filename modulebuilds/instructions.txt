@@ -1,0 +1,8 @@
+- welcome to module builds folder, here we have uploaded our chosen modules that we love
+- there are also other modules you can download
+- visit various pages to find thier own modules
+
+---BE CAREFUL---
+- sometime malicious files can be disguised as a "module build"
+- check before installing and dont give permissions to files you dont trust.
+- have fun and enjoy responsibly!
