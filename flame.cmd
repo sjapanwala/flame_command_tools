@@ -81,6 +81,9 @@ if %command%==termhelp goto termhelp
 if %command%==whoami goto whoami
 if %command%==connect goto ping
 if %command%==setlaunchterm goto setlaunchterm
+if %command%==checkconnection goto checkconnection
+if %command%==runip goto runiproot
+if %command%==getip goto getip
 
 goto invalidcommand
 
@@ -199,14 +202,16 @@ if %changelanchterm%==module echo LAUNCH >> launch.mod && goto softreset
 echo Welcome To Flame Help
 echo - Help Screen For *FLAME COMMANDS ONLY*
 echo -----------------------------------------
-echo 1) search - Searches The Web (variations can be added after search ["searchedge", "searchurl", etc.])
-echo 2) youtube - Searches YouTube (can also be accessed using "watch")
-echo 3) start - starts either an entered file, or windows command prompt
-echo 4) changetitle - changes the window title (easter egg??)
-echo 5) ipinfo - shows %localcomputername%'s IP Information
-echo 6) searchip - shows a targets IP Information
-echo 7) map - shows a map
-echo 8) connects - connects your PC to another PC (allows communication between servers)
+echo 01) search - Searches The Web (variations can be added after search ["searchedge", "searchurl", etc.])
+echo 02) youtube - Searches YouTube (can also be accessed using "watch")
+echo 03) start - starts either an entered file, or windows command prompt
+echo 04) changetitle - changes the window title (easter egg??)
+echo 05) ipinfo - shows %localcomputername%'s IP Information
+echo 06) searchip - shows a targets IP Information
+echo 07) map - shows a map
+echo 08) connects - connects your PC to another PC (allows communication between servers)
+echo 09) runip - runs a branch of ipsearch tools
+echo 10) getip - gets only ipinformation (ipv4/ipv6) 
 echo.
 goto commandline
 
@@ -365,6 +370,64 @@ echo                  ████▓▓▓▓▓▓██      ██
 echo                      ██████▓▓██                                
 echo                      ▒▒▒▒▒▒▒▒▒▒                               
 goto commandline
+
+:checkconnection
+FOR /F %%a IN ('curl https://ipv4.icanhazip.com/') DO set connectionip=%%a
+echo.
+echo [40;32m%connectionip%
+curl http://ip-api.com/line/?fields=org
+:choice
+set /p choice=[40;37mCheck Connection?[Y/N]: 
+if %choice%==y goto connectcheck
+if %choice%==Y goto connectcheck
+if %choice%==n goto commandline
+if %choice%==N goto commandline
+goto choice
+:connectcheck
+echo.
+title Pinging [ %connectionip% ]   [ Status: Loading... ]
+set connectionlevel=OK
+PING -n 1 %connectionip% | FIND "TTL=">nul && echo [40;32m-$-Connection Established, Good Connection[40;37m
+IF ERRORLEVEL 1 (SET in=0b & echo [40;31mConnection Dead.) && echo Connection Lost or Not-Found. [40;37m && goto commandline
+ping -t 2 0 10 127.0.0.1 >nul 
+goto commandline
+
+:runiproot
+echo ENTER AN IP [IPV4]
+set /p rootip=→
+echo.
+echo CHOOSE AN OPTION
+echo.
+echo [40;31m1[40;37m) BRANCH 1 - RELIABLE [[40;32mACTIVE[40;37m]   
+echo [40;31m2[40;37m) BRANCH 2  LIMITED USE [[40;32mACTIVE[40;37m]
+echo [40;31m3[40;37m) BRANCH 3 - UNTESTED [[40;32mACTIVE[40;37m]
+set /p branchoption=
+if %branchoption%==1 goto branch1
+if %branchoption%==2 goto branch2
+if %branchoption%==3 goto branch3
+goto commandline
+
+:branch1
+curl http://ip-api.com/line/%rootip%?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,reverse,mobile,proxy,hosting,query
+echo.
+goto commandlinestart
+:branch2
+curl https://ipapi.co/%rootip%/json/
+echo.
+goto commandlinestart
+:branch3
+curl https://api.ipapi.is?q=%rootip%
+echo.
+goto commandline
+
+:getip
+echo.
+echo [40;32m
+curl www.icanhazip.com
+curl https://ipv4.icanhazip.com/
+echo.
+goto commandline
+
 ::
 ::    __  _______  ____  __  ____    ___    ____ 
 ::   /   │/  / __ \/ __ \/ / / / /   /    │  / __ \
